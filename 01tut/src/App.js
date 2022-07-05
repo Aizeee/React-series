@@ -3,13 +3,13 @@ import SearchBox from './SearchBox';
 import AddItem from './AddItem';
 import Content from './Content';
 import Footer from './Footer';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 
 
 function App() {
 
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem('shopping list')));
+  const [items, setItems] = useState(JSON.parse(localStorage.getItem('shopping list')) || []);
   // items is name of list
   // item is name of (for now) name of key in object
   // iteem is name of class. to be pulled from css file
@@ -30,10 +30,10 @@ function App() {
   const[newItem, setNewItem]=useState('')
   const[search,setSearch]=useState('')
 
-  const setAndSaveItem = (pear)=>{
-    setItems(pear);
-    localStorage.setItem("shopping list", JSON.stringify(pear));
-  }
+  useEffect(()=>{
+    localStorage.setItem('shopping list', JSON.stringify(items));
+  }, [items])
+
 
   const addItem=(item)=>{
     const id = items.length ? items[items.length - 1].id + 1 : 1;
@@ -46,20 +46,20 @@ function App() {
     }
 
     const listItems = [...items, myNewItem];
-    setAndSaveItem(listItems);
+    setItems(listItems);
   }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
   const handleCheck = (id) => {
     const listItems = items.map((i)=> i.id === id ? {...i, checked:!i.checked}:i); // means: for each i in items, if i.id === idThatWasPastIn, return this if true : return this if false
-    setAndSaveItem(listItems);
+    setItems(listItems);
   }
 
   //handleDelete (practise a few times on this and handleCheck)
   const handleDelete = (id) =>{
     const listItems = items.filter((item)=> item.id !== id);
-    setAndSaveItem(listItems);
+    setItems(listItems);
   }
 
   //handleSubmit
