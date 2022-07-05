@@ -1,0 +1,30 @@
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:center;
+}
+
+.square {
+  align-items: center;
+  border:2px solid black;
+  display:grid;
+  place-content: center;
+  width: 400px;
+  height: 400px;
+}
+
+label{
+  position: absolute;
+  left: -999999px
+}
+.square p {
+  text-align: center;
+}
+form {
+  width: 400px;
+}
+input{
+  width: 100%;
+}
