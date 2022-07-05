@@ -8,8 +8,9 @@ import {useEffect, useState} from 'react';
 
 
 function App() {
+  const API_URL = 'http://localhost:3500/items';
 
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem('shopping list')) || []);
+  const [items, setItems] = useState([]);
   // items is name of list
   // item is name of (for now) name of key in object
   // iteem is name of class. to be pulled from css file
@@ -27,12 +28,28 @@ function App() {
   
 
 
-  const[newItem, setNewItem]=useState('')
-  const[search,setSearch]=useState('')
-
+  const[newItem, setNewItem] = useState('')
+  const[search,setSearch] = useState('')
+  const[fetchError, setFetchError] = useState(null)
+//////////////////////////////                  redo this portion for practice                       /////////////////////////////////////////////////////////////
   useEffect(()=>{
-    localStorage.setItem('shopping list', JSON.stringify(items));
-  }, [items])
+    console.log('useEffect ran')
+    const fetchItems = async() =>{
+      try{
+        const response = await fetch(API_URL);
+        if (!response.ok) throw Error('Did not receive expected data');
+        const itemList = await response.json();
+        setItems(itemList);
+        setFetchError(null);
+        console.log("no error")
+      } catch(err){
+        setFetchError(err.message)
+        console.log("error")
+      }
+      
+    } 
+    fetchItems();
+  }, [])
 
 
   const addItem=(item)=>{
@@ -90,12 +107,15 @@ function App() {
         search={search}
         setSearch={setSearch}
       />
-      <Content 
-        items={items.filter(item=> (   (item.item).toLowerCase()  ) .includes(   search.toLowerCase()   )   )}
-        setItems={setItems}
-        handleCheck={handleCheck}
-        handleDelete={handleDelete}
-      />
+      <main>
+        {fetchError && <p style={{color:"red"}}>{`Error: ${fetchError}`}</p>}
+        {!fetchError && <Content 
+          items={items.filter(item=> (   (item.item).toLowerCase()  ) .includes(   search.toLowerCase()   )   )}
+          setItems={setItems}
+          handleCheck={handleCheck}
+          handleDelete={handleDelete}
+        /> }
+      </main>
       <Footer
         itemsLength={items.length}
         items={items}
