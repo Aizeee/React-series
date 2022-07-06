@@ -25,13 +25,11 @@ function App() {
         // setItem
         // localStorage.setItems and setItems in this case is totally different.
         // one is to add to local storage, the other is the usestate func from above
-  
-
-
   const[newItem, setNewItem] = useState('')
   const[search,setSearch] = useState('')
   const[fetchError, setFetchError] = useState(null)
-//////////////////////////////                  redo this portion for practice                       /////////////////////////////////////////////////////////////
+  const[isLoading, setIsLoading] = useState(true)
+//////////////////////////////  redo this portion for practice    /////////////////////////////////////////////////////////////
   useEffect(()=>{
     console.log('useEffect ran')
     const fetchItems = async() =>{
@@ -45,23 +43,62 @@ function App() {
       } catch(err){
         setFetchError(err.message)
         console.log("error")
+      } finally{
+        setIsLoading(false);
       }
-      
     } 
-    fetchItems();
-  }, [])
+
+    setTimeout(()=>{
+      fetchItems();
+    }, 2000)
+    
+  //////////////////////////////start practice/////////////////////////////////////////////////
+    
+    setTimeout(()=>{
+      fetchItems()
+    }, 2000)
+    
+    setTimeout(()=>{fetchItems()},2000)
+
+
+    //pseudo code
+    //use effect. 
+    //every time this is ran, i want to pull the data from db
+    //try to get data
+    //1. set what fetchitem is 
+    //  fetchItem
+    //    try 
+    //        response = FETCH API
+    //    catch err
+    //2. call on the function
+    //3. you can setTimeout(call func, 2000)
+
+  useEffect(()=>{
+    const fetchItems = async()=>{
+      try{
+        const response = await fetch(API_URL)
+        if(!response.ok) throw Error('blah')
+        const itemList = await response.json();
+        setItems(itemList);
+        setFetchError(null);
+      }
+      catch(err){
+        setFetchError(err.message)
+      }
+    }
+  })
+/////////////////////////////////end practice//////////////////////////////////////////////  
+  })
 
 
   const addItem=(item)=>{
     const id = items.length ? items[items.length - 1].id + 1 : 1;
-
     /* const myNewItem={id,checked:false, item}; */
     let myNewItem={
       id: id,
       checked: false,
       item: item
     }
-
     const listItems = [...items, myNewItem];
     setItems(listItems);
   }
@@ -108,6 +145,7 @@ function App() {
         setSearch={setSearch}
       />
       <main>
+        {isLoading && <p> Loading... </p>}
         {fetchError && <p style={{color:"red"}}>{`Error: ${fetchError}`}</p>}
         {!fetchError && <Content 
           items={items.filter(item=> (   (item.item).toLowerCase()  ) .includes(   search.toLowerCase()   )   )}
@@ -126,9 +164,3 @@ function App() {
 
 export default App;
 
-
-
-// Headers are functions you made called components
-// even this app() is a function
-// components can have functions in the middle of the return()
-//
