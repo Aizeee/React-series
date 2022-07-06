@@ -88,7 +88,7 @@ function App() {
     }
   })
 /////////////////////////////////end practice//////////////////////////////////////////////  
-  })
+  },[])
 
 
   const addItem=(item)=>{
@@ -147,7 +147,7 @@ function App() {
       <main>
         {isLoading && <p> Loading... </p>}
         {fetchError && <p style={{color:"red"}}>{`Error: ${fetchError}`}</p>}
-        {!fetchError && <Content 
+        {!fetchError && !isLoading && <Content 
           items={items.filter(item=> (   (item.item).toLowerCase()  ) .includes(   search.toLowerCase()   )   )}
           setItems={setItems}
           handleCheck={handleCheck}
