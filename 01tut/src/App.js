@@ -3,7 +3,9 @@ import SearchBox from './SearchBox';
 import AddItem from './AddItem';
 import Content from './Content';
 import Footer from './Footer';
+import apiRequest from './apiRequest';
 import {useEffect, useState} from 'react';
+
 
 
 
@@ -15,13 +17,6 @@ function App() {
   // item is name of (for now) name of key in object
   // iteem is name of class. to be pulled from css file
   // itm is name of (for each) object in the list
-        //setItems(items)
-        // for the case of i, the param can be called anything, so long you rmb what it stand for in the context.
-        // this is the same as a arrow function. just that the map has basically opened each object in the list
-        // equivilent as FOR EACH LINE. do the following
-        // the : yes or no thingy simply determines what gets added into the param
-      
-
         // setItem
         // localStorage.setItems and setItems in this case is totally different.
         // one is to add to local storage, the other is the usestate func from above
@@ -30,6 +25,7 @@ function App() {
   const[fetchError, setFetchError] = useState(null)
   const[isLoading, setIsLoading] = useState(true)
 //////////////////////////////  redo this portion for practice    /////////////////////////////////////////////////////////////
+
   useEffect(()=>{
     console.log('useEffect ran')
     const fetchItems = async() =>{
@@ -51,47 +47,14 @@ function App() {
     setTimeout(()=>{
       fetchItems();
     }, 2000)
-    
-  //////////////////////////////start practice/////////////////////////////////////////////////
-    
-    setTimeout(()=>{
-      fetchItems()
-    }, 2000)
-    
-    setTimeout(()=>{fetchItems()},2000)
-
-
-    //pseudo code
-    //use effect. 
-    //every time this is ran, i want to pull the data from db
-    //try to get data
-    //1. set what fetchitem is 
-    //  fetchItem
-    //    try 
-    //        response = FETCH API
-    //    catch err
-    //2. call on the function
-    //3. you can setTimeout(call func, 2000)
-
-  useEffect(()=>{
-    const fetchItems = async()=>{
-      try{
-        const response = await fetch(API_URL)
-        if(!response.ok) throw Error('blah')
-        const itemList = await response.json();
-        setItems(itemList);
-        setFetchError(null);
-      }
-      catch(err){
-        setFetchError(err.message)
-      }
-    }
-  })
-/////////////////////////////////end practice//////////////////////////////////////////////  
   },[])
+    
+  ////////////////////////////////start practice/////////////////////////////////////////////////
+  /////////////////////////////////end practice//////////////////////////////////////////////  
 
 
-  const addItem=(item)=>{
+
+  const addItem= async (item)=>{
     const id = items.length ? items[items.length - 1].id + 1 : 1;
     /* const myNewItem={id,checked:false, item}; */
     let myNewItem={
@@ -101,26 +64,55 @@ function App() {
     }
     const listItems = [...items, myNewItem];
     setItems(listItems);
+
+    const postOptions={
+      method: 'POST',
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(myNewItem)
+    }
+    const result = await apiRequest(API_URL, postOptions) 
+    if (result) setFetchError(result)
   }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  const handleCheck = (id) => {
+  const handleCheck = async (id) => {
     const listItems = items.map((i)=> i.id === id ? {...i, checked:!i.checked}:i); // means: for each i in items, if i.id === idThatWasPastIn, return this if true : return this if false
     setItems(listItems);
+    
+    const myItem = items.filter((item)=> item.id===id)
+    const updateOptions = {
+      method:'PATCH',
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({checked: myItem[0].checked})
+    }
+    const reqUrl = `${API_URL}/${id}`
+    const result = await apiRequest(reqUrl, updateOptions) 
+    
+    if (result) setFetchError(result)
   }
 
   //handleDelete (practise a few times on this and handleCheck)
-  const handleDelete = (id) =>{
+  const handleDelete = async (id) =>{
     const listItems = items.filter((item)=> item.id !== id);
     setItems(listItems);
+
+    const deleteOptions = { 
+      method: "DELETE"
+    }
+    const reqUrl = `${API_URL}/${id}`
+    const result = await apiRequest(reqUrl, deleteOptions) 
+    if (result) setFetchError(result)
   }
 
   //handleSubmit
   const handleSubmit = (e)=>{
     e.preventDefault();
     if (!newItem) return;
-    //addItem
     addItem(newItem);
     setNewItem(''); /// to reset the input form to nothing
   }
