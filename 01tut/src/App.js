@@ -53,13 +53,6 @@ function App() {
     }, 2000)
     
   //////////////////////////////start practice/////////////////////////////////////////////////
-    
-    setTimeout(()=>{
-      fetchItems()
-    }, 2000)
-    
-    setTimeout(()=>{fetchItems()},2000)
-
 
     //pseudo code
     //use effect. 
