@@ -1,13 +1,15 @@
-const apiRequest = async(url = '', optionsObj = null, errMsg = null) => {
-  try{
-    const response = await fetch(url, optionsObj);
-    if (!response.ok) throw Error("")
 
-  } catch(err) {
+const apiRequest = async (url= '', optionObj = null, errMsg = null) => {
+    try{
+        const response= await fetch(url, optionObj)
+        if (!response.ok) throw Error("Please reload the app")
 
-  } finally {
+    } catch (err){
+        errMsg = err.message
+    } finally {
+        return errMsg
+    }
 
-  }
 }
 
 export default apiRequest
